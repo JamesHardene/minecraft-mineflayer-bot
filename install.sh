@@ -103,6 +103,7 @@ resolve_release() {
   [[ "$tag" != *'/'* && "$tag" != *'..'* ]] || die 'GitHub Release tag 无效'
   RELEASE_API_TAG=$tag
   asset_url="https://ghfast.top/https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}"
+
   info "发现最新 Release：$RELEASE_API_TAG"
 }
 
@@ -139,13 +140,13 @@ resolve_checksum_asset() {
 
 download_asset() {
   local candidate result
-  local candidates=("https://ghfast.top/https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}")
+  local candidates=("https://ghfast.top/https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}" "https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}")
   if [[ -n "${MCBOT_GITHUB_MIRRORS:-}" ]]; then
     local item
     IFS=',' read -r -a mirrors <<< "$MCBOT_GITHUB_MIRRORS"
     for item in "${mirrors[@]}"; do
       item="${item%/}"
-      [[ -n "$item" ]] && candidates+=("$item/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}")
+      [[ -n "$item" ]] && candidates=("$item/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}" "${candidates[@]}")
     done
   fi
   for candidate in "${candidates[@]}"; do
@@ -161,10 +162,11 @@ download_asset() {
 }
 
 check_zip_paths() {
-  local entry
-  while IFS= read -r entry; do
-    [[ "$entry" == minecraft-bot/* ]] || die "ZIP 根目录异常：$entry"
-    [[ "$entry" != /* && "$entry" != *'../'* && "$entry" != *'/..'* ]] || die "ZIP 包含路径穿越：$entry"
+  local raw entry
+  while IFS= read -r raw; do
+    entry=${raw//\\//}
+    [[ "$entry" == minecraft-bot/* ]] || die "ZIP 根目录异常：$raw"
+    [[ "$entry" != /* && "$entry" != *'../'* && "$entry" != *'/..'* ]] || die "ZIP 包含路径穿越：$raw"
   done < <(unzip -Z1 "$WORK_DIR/$ASSET_NAME")
 }
 
