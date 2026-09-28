@@ -1,0 +1,36 @@
+[Unit]
+Description=Mineflayer Minecraft idle bot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=minecraft-bot
+Group=minecraft-bot
+WorkingDirectory=/opt/minecraft-bot
+Environment=NODE_ENV=production
+Environment=MC_LOGIN_DELAY_SECONDS=3
+Environment=MC_LOGIN_COMMAND=/l
+EnvironmentFile=-/etc/minecraft-bot/minecraft-bot.env
+Environment=HOME=/var/lib/minecraft-bot
+Environment=MCBOT_DATA_DIR=/var/lib/minecraft-bot
+Environment=MCBOT_STATUS_FILE=/var/lib/minecraft-bot/status.json
+Environment=MCBOT_CONTROL_SOCKET=/run/minecraft-bot/control.sock
+Environment=MCBOT_SERVICE_NAME=minecraft-bot.service
+Environment=MC_PROFILES_FOLDER=/var/lib/minecraft-bot/auth
+RuntimeDirectory=minecraft-bot
+RuntimeDirectoryMode=0770
+ExecStart=/usr/bin/node /opt/minecraft-bot/src/bot.js
+Restart=always
+RestartSec=15
+TimeoutStopSec=30
+KillSignal=SIGTERM
+SyslogIdentifier=minecraft-bot
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/minecraft-bot /run/minecraft-bot
+
+[Install]
+WantedBy=multi-user.target

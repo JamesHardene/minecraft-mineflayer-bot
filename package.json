@@ -1,0 +1,17 @@
+{
+  "name": "minecraft-mineflayer-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A systemd-managed Mineflayer idle bot for Debian.",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "status": "node src/status-cli.js once"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "mineflayer": "4.39.0"
+  }
+}

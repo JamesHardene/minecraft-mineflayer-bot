@@ -1,0 +1,27 @@
+# Dependencies and npm credentials
+node_modules/
+.npmrc
+.network.env
+npm-debug.log*
+
+# Real environment files and secrets
+.env
+*.env.local
+*.secret
+*.secret.env
+*.pem
+*.key
+
+# Runtime state, logs, caches, and credentials
+*.log
+error-log*.txt
+status.json
+status.json.*.tmp
+*.tmp
+auth/
+servers/
+servers.json
+
+# Deployment artifacts and local tooling
+minecraft-bot-debian.zip
+.zcode/
