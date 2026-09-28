@@ -102,7 +102,7 @@ resolve_release() {
   [[ -n "$tag" ]] || die 'GitHub latest Release 缺少 tag_name'
   [[ "$tag" != *'/'* && "$tag" != *'..'* ]] || die 'GitHub Release tag 无效'
   RELEASE_API_TAG=$tag
-  asset_url="https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}"
+  asset_url="https://ghfast.top/https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}"
   info "发现最新 Release：$RELEASE_API_TAG"
 }
 
@@ -139,7 +139,7 @@ resolve_checksum_asset() {
 
 download_asset() {
   local candidate result
-  local candidates=("https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}")
+  local candidates=("https://ghfast.top/https://github.com/${REPO}/releases/download/${RELEASE_API_TAG}/${ASSET_NAME}")
   if [[ -n "${MCBOT_GITHUB_MIRRORS:-}" ]]; then
     local item
     IFS=',' read -r -a mirrors <<< "$MCBOT_GITHUB_MIRRORS"
