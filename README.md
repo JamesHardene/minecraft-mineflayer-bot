@@ -8,7 +8,7 @@
 
 ```bash
 curl --proto '=https' --proto-redir '=https' -fsSL \
-  https://raw.githubusercontent.com/JamesHardene/minecraft-mineflayer-bot/main/install-minecraft-bot-bootstrap.sh \
+  https://raw.githubusercontent.com/JamesHardene/minecraft-mineflayer-bot/main/install.sh \
   -o install-minecraft-bot-bootstrap.sh
 chmod +x install-minecraft-bot-bootstrap.sh
 sudo ./install-minecraft-bot-bootstrap.sh
