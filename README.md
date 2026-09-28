@@ -2,7 +2,73 @@
 
 这是一个由 `systemd` 管理的 Mineflayer Minecraft 机器人。机器人进程不依赖 SSH 会话，SSH 断开后仍会继续运行；启用服务后，Debian 开机也会自动启动。状态查看使用纯终端命令 `mcbot`，不需要桌面或浏览器。当前部署基线为 Mineflayer `4.39.0` 和 Node.js 24 LTS（最低 Node.js 22）；未指定 `MC_VERSION` 时由 Mineflayer 自动探测协议版本。
 
+## 一键引导安装
+
+如果只想在全新 Debian 主机上输入一次命令完成安装，可以先下载 bootstrap 脚本，再运行它：
+
+```bash
+curl --proto '=https' --proto-redir '=https' -fsSL \
+  https://raw.githubusercontent.com/JamesHardene/minecraft-mineflayer-bot/main/install-minecraft-bot-bootstrap.sh \
+  -o install-minecraft-bot-bootstrap.sh
+chmod +x install-minecraft-bot-bootstrap.sh
+sudo ./install-minecraft-bot-bootstrap.sh
+```
+
+bootstrap 默认使用 GitHub 最新正式 Release（`MCBOT_RELEASE_TAG=latest`），会先收集服务器地址、端口、机器人用户名、认证方式、协议版本、服务器名称和插件登录密码，然后：
+
+- 通过 GitHub Releases API 解析最新 Release；
+- 从 GitHub 或 `MCBOT_GITHUB_MIRRORS` 镜像下载 `minecraft-bot-debian.zip`；
+- 校验 Release 提供的 `.sha256`/`SHA256SUMS` 资产；
+- 安全检查 ZIP 路径并解压到临时目录；
+- 调用正式安装器完成 Node.js、Mineflayer、systemd 和配置安装。
+
+如果要固定某个 Release：
+
+```bash
+sudo MCBOT_RELEASE_TAG=v1.0.0 ./install-minecraft-bot-bootstrap.sh
+```
+
+非交互安装可以通过环境变量提供服务器信息：
+
+```bash
+sudo env \
+  MC_HOST=ali.mc9.city \
+  MC_PORT=25565 \
+  MC_USERNAME=Misaka \
+  MC_AUTH=offline \
+  MC_SERVER_NAME=ali.mc9.city \
+  MCBOT_RELEASE_TAG=latest \
+  ./install-minecraft-bot-bootstrap.sh
+```
+
+密码建议在交互模式下隐藏输入。若必须自动化传入，可使用短生命周期环境变量 `MC_LOGIN_PASSWORD`；不要把密码写入命令行参数。`MCBOT_NO_START=1` 可安装并启用开机自启但跳过本次启动。
+
+bootstrap 要求 Release 提供 SHA-256 校验资产；如果 Release 没有校验资产，可以显式提供：
+
+```bash
+sudo env MCBOT_RELEASE_SHA256=64位SHA256值 \
+  ./install-minecraft-bot-bootstrap.sh
+```
+
 ## 快速安装
+
+如果使用 GitHub Release 的一键引导脚本，推荐直接运行：
+
+```bash
+curl --proto '=https' --proto-redir '=https' -fsSL \
+  https://raw.githubusercontent.com/JamesHardene/minecraft-mineflayer-bot/main/install-minecraft-bot-bootstrap.sh \
+  -o install-minecraft-bot-bootstrap.sh
+chmod +x install-minecraft-bot-bootstrap.sh
+sudo ./install-minecraft-bot-bootstrap.sh
+```
+
+引导脚本默认解析最新正式 Release（`MCBOT_RELEASE_TAG=latest`），下载并校验部署 ZIP 后调用正式安装器。Release 必须提供 GitHub 资产 digest 或 `minecraft-bot-debian.zip.sha256`/`SHA256SUMS` 校验资产；没有可靠校验值时脚本会拒绝安装。也可以显式固定版本：
+
+```bash
+sudo MCBOT_RELEASE_TAG=v1.0.0 ./install-minecraft-bot-bootstrap.sh
+```
+
+引导脚本会隐藏读取服务器插件密码，密码不会拼进正式安装器命令行。非交互环境可使用 `MC_HOST`、`MC_PORT`、`MC_USERNAME`、`MC_AUTH`、`MC_VERSION`、`MC_SERVER_NAME` 和短生命周期 `MC_LOGIN_PASSWORD` 环境变量。镜像可通过 `MCBOT_GITHUB_MIRRORS` 追加，安装完成后 `MCBOT_NO_START=1` 可跳过本次启动但仍启用开机自启。
 
 将整个目录复制到 Debian 主机后，以 root 或 sudo 运行：
 
